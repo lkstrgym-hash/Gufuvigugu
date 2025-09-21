@@ -16,6 +16,7 @@
             --secondary-text: #666666;
             --border-color: #E0E0E0;
             --success-color: #2ECC71;
+            --success-hover: #27AE60;
         }
 
         body {
@@ -61,7 +62,10 @@
 
         .input-group {
             margin-bottom: 25px;
-            text-align: right;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
         }
 
         label {
@@ -69,6 +73,8 @@
             margin-bottom: 8px;
             font-weight: bold;
             color: var(--secondary-text);
+            width: 100%;
+            text-align: right;
         }
 
         input[type="text"] {
@@ -78,6 +84,7 @@
             border-radius: 8px;
             font-size: 1rem;
             transition: all 0.3s ease;
+            box-sizing: border-box;
         }
 
         input[type="text"]:focus {
@@ -106,7 +113,7 @@
         #result-container {
             margin-top: 30px;
             text-align: center;
-            min-height: 200px; /* فضای خالی برای نمایش تصویر */
+            min-height: 200px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -143,7 +150,7 @@
         }
 
         #download-btn:hover {
-            background-color: #27AE60;
+            background-color: var(--success-hover);
         }
 
         /* Responsive Design */
