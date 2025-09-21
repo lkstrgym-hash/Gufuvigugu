@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ساخت تصویر با هوش مصنوعی</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap');
+
+        :root {
+            --primary-color: #4A90E2;
+            --primary-hover: #357ABD;
+            --background-color: #F7F9FC;
+            --card-background: #FFFFFF;
+            --text-color: #333333;
+            --secondary-text: #666666;
+            --border-color: #E0E0E0;
+            --success-color: #2ECC71;
+        }
+
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 20px;
+            color: var(--text-color);
+            direction: rtl;
+        }
+
+        .container {
+            background-color: var(--card-background);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 650px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: var(--secondary-text);
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+            text-align: right;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--secondary-text);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+        }
+
+        .btn {
+            padding: 12px 30px;
+            font-size: 1rem;
+            color: white;
+            background-color: var(--primary-color);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        #result-container {
+            margin-top: 30px;
+            text-align: center;
+            min-height: 200px; /* فضای خالی برای نمایش تصویر */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #loading {
+            display: none;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        #generated-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            display: none;
+            transition: all 0.5s ease;
+        }
+
+        #download-btn {
+            display: none;
+            margin-top: 20px;
+            background-color: var(--success-color);
+        }
+
+        #download-btn:hover {
+            background-color: #27AE60;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>هوش مصنوعی ساخت تصویر 🖼️</h1>
+        <p class="subtitle">متنی که می خواهید به تصویر تبدیل شود را وارد کنید.</p>
+        
+        <div class="input-group">
+            <label for="prompt">متن انگلیسی (Prompt):</label>
+            <input type="text" id="prompt" placeholder="مثلا: A cyberpunk city at night with neon lights">
+        </div>
+        
+        <button class="btn" onclick="generateImage()">ساخت تصویر</button>
+
+        <div id="result-container">
+            <div id="loading">...در حال ساخت تصویر</div>
+            <img id="generated-image" src="" alt="تصویر ساخته‌شده">
+            <a id="download-btn" class="btn" download="generated_image.jpg">
+                دانلود تصویر
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function generateImage() {
+            const promptInput = document.getElementById('prompt');
+            const prompt = promptInput.value.trim();
+            const loadingElement = document.getElementById('loading');
+            const imageElement = document.getElementById('generated-image');
+            const downloadBtn = document.getElementById('download-btn');
+
+            if (!prompt) {
+                alert('لطفا متن خود را وارد کنید.');
+                promptInput.focus();
+                return;
+            }
+
+            loadingElement.style.display = 'block';
+            imageElement.style.display = 'none';
+            downloadBtn.style.display = 'none';
+            
+            const encodedPrompt = encodeURIComponent(prompt);
+            const apiUrl = `http://PyBot.Napelon-Ai.ir/Aks.php/file.php?prompt=${encodedPrompt}`;
+
+            // Reset image source to trigger reload
+            imageElement.src = '';
+            imageElement.src = apiUrl;
+
+            imageElement.onload = () => {
+                loadingElement.style.display = 'none';
+                imageElement.style.display = 'block';
+                downloadBtn.style.display = 'inline-block';
+                downloadBtn.href = apiUrl;
+            };
+
+            imageElement.onerror = () => {
+                loadingElement.style.display = 'none';
+                imageElement.style.display = 'none';
+                downloadBtn.style.display = 'none';
+                alert('خطا در ساخت تصویر یا بارگذاری آن. لطفا دوباره امتحان کنید.');
+            };
+        }
+    </script>
+
+</body>
+</html>
